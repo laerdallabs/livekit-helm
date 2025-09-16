@@ -78,6 +78,7 @@ jobs:
         working-directory: src
         run: |
           set -v
+          set +e
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml"
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml" | jq -R .
