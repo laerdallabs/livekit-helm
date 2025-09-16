@@ -1,0 +1,167 @@
+name: Release Helm Charts
+
+# Do not change this
+concurrency: release-helm
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      changed-charts: ${{ steps.get-changed-charts.outputs.changed-charts }}
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: 'src'
+          fetch-depth: 0
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: 'dest'
+          ref: 'gh-pages'
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v1
+
+      - name: Set version to -prerelease on non-major branches
+        if: github.ref != 'refs/heads/main'
+        shell: bash
+        run: |
+          for chart in $(find . -type f -name 'Chart.yaml'); do
+            yq e '.version |= (. + "-prerelease")' ${chart} > tmp-Chart.yaml
+            mv tmp-Chart.yaml ${chart}
+          done
+
+      - name: Sync README.md
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          cp src/README.md dest/README.md
+
+      - name: Package Helm Charts
+        shell: bash
+        run: |
+          find . -type f -name 'Chart.yaml' | sed -r 's|/[^/]+$||' | sort | uniq | xargs -L 1 helm dep up
+          for d in `find ./* -type d -maxdepth 0 -not -name examples` ; do
+            echo "$d"
+            helm package "$d" -u -d dest
+          done
+
+      - name: Push New Files
+        shell: bash
+        working-directory: dest
+        run: |
+          helm repo index . --url https://raw.githubusercontent.com/laerdallabs/livekit-helm/gh-pages/
+          git config user.name "Helm Updater"
+          git config user.email "actions@users.noreply.github.com"
+          git add .
+          git commit -m "Updated from ref: $GITHUB_SHA"
+          git push
+
+      - name: Identify Updated Charts
+        id: get-changed-charts
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        working-directory: src
+        run: |
+          changed_charts="$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml" | jq -R . | jq -sc .)"
+          echo "changed-charts=${changed_charts}"
+          echo "changed-charts=${changed_charts}" >> $GITHUB_OUTPUT
+
+  create-releases:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: release
+    strategy:
+      matrix:
+        chart: ${{fromJson(needs.release.outputs.changed-charts)}}
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: 'gh-pages'
+          ref: 'gh-pages'
+          fetch-depth: 0
+
+      - name: Set Release Vars
+        id: set-vars
+        run: |
+          chart_name="$(yq e '.name' ${{ matrix.chart }})"
+          chart_version="$(yq e '.version' ${{ matrix.chart }})"
+          chart_description="$(yq e '.description' ${{ matrix.chart }})"
+          release_tag="${chart_name}-${chart_version}"
+
+          echo "chart_name=${chart_name}"
+          echo "chart_version=${chart_version}"
+          echo "chart_description=${chart_description}"
+          echo "release_tag=${release_tag}"
+
+          echo "chart_name=${chart_name}" >> $GITHUB_OUTPUT
+          echo "chart_version=${chart_version}" >> $GITHUB_OUTPUT
+          echo "chart_description=${chart_description}" >> $GITHUB_OUTPUT
+          echo "release_tag=${release_tag}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+
+          # Define the JSON payload
+          JSON_PAYLOAD=$(jq -n \
+            --arg tag_name "${{ steps.set-vars.outputs.release_tag }}" \
+            --arg body "${{ steps.set-vars.outputs.chart_description }}" \
+            --arg name "${{ steps.set-vars.outputs.release_tag }}" \
+            '{
+              tag_name: $tag_name,
+              name: $name,
+              body: $body,
+              draft: false,
+              prerelease: false
+            }')
+
+          # Make the API request
+          RESPONSE=$(curl -XPOST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            --data "$JSON_PAYLOAD" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases")
+
+          # Output the response (optional)
+          echo "$RESPONSE"
+
+      - name: Upload Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ASSET_PATH="gh-pages/${{ steps.set-vars.outputs.release_tag }}.tgz"
+          ASSET_NAME="$(basename ${ASSET_PATH})"
+
+          # Retrieve the ID of the created release
+          RELEASE_ID="$(
+            curl -sH "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${{ steps.set-vars.outputs.release_tag }}" \
+            | jq -r '.id'
+          )"
+
+          # Get the correct upload URL for the asset
+          UPLOAD_URL="https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=$(basename $ASSET_PATH)"
+
+          # Upload the asset
+          curl -XPOST \
+            --data-binary @"$ASSET_PATH" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            "$UPLOAD_URL"
