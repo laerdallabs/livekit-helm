@@ -47,7 +47,9 @@ jobs:
 
       - name: debug stuff
         shell: bash
-        run: find .
+        run: |
+          find .
+          jq --version
 
       - name: Package Helm Charts
         shell: bash
