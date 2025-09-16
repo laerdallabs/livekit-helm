@@ -51,6 +51,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Pod labels
+*/}}
+{{- define "livekit-server.podLabels" -}}
+
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "livekit-server.serviceAccountName" -}}

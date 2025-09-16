@@ -110,6 +110,11 @@ podAnnotations:
   sidecar.istio.io/inject: "false"
   linkerd.io/inject: disabled
 
+podLabels:
+  {}
+  # environment: production
+  # tier: frontend
+
 podSecurityContext:
   {}
   # fsGroup: 2000

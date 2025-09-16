@@ -28,6 +28,7 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "livekit-server.selectorLabels" . | nindent 8 }}
+        {{- include "livekit-server.podLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
