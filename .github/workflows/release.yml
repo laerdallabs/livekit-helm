@@ -76,20 +76,15 @@ jobs:
         if: github.ref == 'refs/heads/main'
         shell: bash
         working-directory: src
+        continue-on-error: true
         run: |
-          set -v
-          set +e
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml"
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml" | jq -R .
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml" | jq -R . | jq -sc .
           changed_charts="$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml" | jq -R . | jq -sc .)"
           echo "changed-charts=${changed_charts}"
           echo "changed-charts=${changed_charts}" >> $GITHUB_OUTPUT
 
   create-releases:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.release.outputs.changed-charts != '[]'
     needs: release
     strategy:
       matrix:
