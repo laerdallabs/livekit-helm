@@ -76,7 +76,6 @@ jobs:
         if: github.ref == 'refs/heads/main'
         shell: bash
         working-directory: src
-        continue-on-error: true
         run: |
           changed_charts="$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml" | jq -R . | jq -sc .)"
           echo "changed-charts=${changed_charts}"
