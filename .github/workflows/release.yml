@@ -77,10 +77,14 @@ jobs:
         shell: bash
         working-directory: src
         run: |
+          set -v
           jq --version
           git log ${{ github.event.before }}
           git log ${{ github.event.after }}
           git diff --name-only ${{ github.event.before }} ${{ github.event.after }}
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml"
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml" | jq -R .
+          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml" | jq -R . | jq -sc .
           changed_charts="$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep "Chart.yaml" | jq -R . | jq -sc .)"
           echo "changed-charts=${changed_charts}"
           echo "changed-charts=${changed_charts}" >> $GITHUB_OUTPUT
@@ -93,7 +97,6 @@ jobs:
       matrix:
         chart: ${{fromJson(needs.release.outputs.changed-charts)}}
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
