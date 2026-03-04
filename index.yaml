@@ -3,9 +3,9 @@ entries:
   egress:
   - apiVersion: v2
     appVersion: v1.9.0
-    created: "2025-09-18T18:53:00.060931653Z"
+    created: "2026-03-04T19:30:58.541400373Z"
     description: Egress is used by LiveKit to stream and record rooms.
-    digest: e409b826588c653f08c80659dea110fc8dda8614dc450d8710a560af3ac7f6d5
+    digest: 14cdbf32a224b7a90dbcba5152f32495cee1d24c27caf846dd83ba4f4b6199eb
     name: egress
     sources:
     - https://github.com/livekit/egress
@@ -16,7 +16,7 @@ entries:
   ingress:
   - apiVersion: v2
     appVersion: v1.4.3
-    created: "2025-09-18T18:53:00.061767632Z"
+    created: "2026-03-04T19:30:58.542121686Z"
     description: Ingress is used by LiveKit to ingest streams produced by external
       workflows
     digest: 0923fd8220a53dc3efab1c2a02d4cde73645675145fb86d294e14d7dfe2059f1
@@ -30,7 +30,7 @@ entries:
   livekit-server:
   - apiVersion: v2
     appVersion: v1.9.0
-    created: "2025-09-18T18:53:00.062568524Z"
+    created: "2026-03-04T19:30:58.542680011Z"
     description: Real-time infrastructure for developers. LiveKit is the open source
       stack for streaming audio, video, and data.
     digest: 2b9339ae6d53b88e0d11c2955e44601c8a5e124d5de38ef7aa9b36ed9eb09aa9
@@ -41,4 +41,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/laerdallabs/livekit-helm/gh-pages/livekit-server-1.9.0.tgz
     version: 1.9.0
-generated: "2025-09-18T18:53:00.059902638Z"
+generated: "2026-03-04T19:30:58.540427812Z"
