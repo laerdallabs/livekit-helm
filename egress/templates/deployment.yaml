@@ -40,9 +40,9 @@ spec:
                 configMapKeyRef:
                   name: {{ include "egress.fullname" . }}
                   key: config.yaml
-            {{- if .Values.gst_debug }}
+            {{- if .Values.egress.gst_debug }}
             - name: GST_DEBUG
-              value: "{{ .Values.gst_debug }}"
+              value: "{{ .Values.egress.gst_debug }}"
             {{- end }}
           ports:
             {{- if .Values.egress.health_port }}
