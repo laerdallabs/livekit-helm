@@ -42,6 +42,43 @@ spec:
         {{- end }}
     {{- end }}
     {{- if .Values.autoscaling.custom }}
+    {{- $customType := default "Pods" .Values.autoscaling.custom.type }}
+    {{- $describedObject := default (dict) .Values.autoscaling.custom.describedObject }}
+    {{- if eq $customType "Object" }}
+    - type: Object
+      object:
+        {{- if semverCompare ">=1.23-0" .Capabilities.KubeVersion.GitVersion }}
+        describedObject:
+          apiVersion: {{ default "v1" (get $describedObject "apiVersion") }}
+          kind: {{ default "Namespace" (get $describedObject "kind") }}
+          name: {{ default .Release.Namespace (get $describedObject "name") }}
+        metric:
+          name: {{ .Values.autoscaling.custom.metricName }}
+        target:
+          type: Value
+          value: {{ .Values.autoscaling.custom.targetValue }}
+        {{- else }}
+        target:
+          apiVersion: {{ default "v1" (get $describedObject "apiVersion") }}
+          kind: {{ default "Namespace" (get $describedObject "kind") }}
+          name: {{ default .Release.Namespace (get $describedObject "name") }}
+        metricName: {{ .Values.autoscaling.custom.metricName }}
+        targetValue: {{ .Values.autoscaling.custom.targetValue }}
+        {{- end }}
+    {{- else if eq $customType "External" }}
+    - type: External
+      external:
+        {{- if semverCompare ">=1.23-0" .Capabilities.KubeVersion.GitVersion }}
+        metric:
+          name: {{ .Values.autoscaling.custom.metricName }}
+        target:
+          type: Value
+          value: {{ .Values.autoscaling.custom.targetValue }}
+        {{- else }}
+        metricName: {{ .Values.autoscaling.custom.metricName }}
+        targetValue: {{ .Values.autoscaling.custom.targetValue }}
+        {{- end }}
+    {{- else }}
     - type: Pods
       pods:
         {{- if semverCompare ">=1.23-0" .Capabilities.KubeVersion.GitVersion }}
@@ -54,5 +91,6 @@ spec:
         metricName: {{ .Values.autoscaling.custom.metricName }}
         targetAverageValue: {{ .Values.autoscaling.custom.targetAverageValue }}
         {{- end }}
+    {{- end }}
     {{- end }}
 {{- end }}
