@@ -4,9 +4,4 @@ metadata:
   name: {{ include "egress.fullname" . }}
 data:
   config.yaml: |
-{{- $config := deepCopy .Values.egress }}
-{{- if .Values.apiSecretRef }}
-{{- $config = unset $config "api_key" }}
-{{- $config = unset $config "api_secret" }}
-{{- end }}
-{{ toYaml $config | indent 4 }}
+{{ toYaml .Values.egress | indent 4 }}
