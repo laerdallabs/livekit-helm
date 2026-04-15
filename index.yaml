@@ -3,7 +3,7 @@ entries:
   egress:
   - apiVersion: v2
     appVersion: v1.9.0
-    created: "2026-04-15T14:16:49.72621756Z"
+    created: "2026-04-15T14:33:59.141948744Z"
     description: Egress is used by LiveKit to stream and record rooms.
     digest: 732eac129cdb333c81e323a3e189fc3cfadc6d4b0dfae80157a21fd71c7cc4b8
     name: egress
@@ -15,9 +15,9 @@ entries:
     version: 1.9.0
   - apiVersion: v2
     appVersion: v1.9.0
-    created: "2026-04-15T14:16:49.72561619Z"
+    created: "2026-04-15T14:33:59.141654986Z"
     description: Egress is used by LiveKit to stream and record rooms.
-    digest: c59bad44acf06be87070c8bf494bde74e39e30a25003c2c8360059026e863d02
+    digest: 26ef744862f6586d577b703e1e82289db03c410b79f569664a563e7092e885a8
     name: egress
     sources:
     - https://github.com/livekit/egress
@@ -28,7 +28,7 @@ entries:
   ingress:
   - apiVersion: v2
     appVersion: v1.4.3
-    created: "2026-04-15T14:16:49.727383046Z"
+    created: "2026-04-15T14:33:59.142667643Z"
     description: Ingress is used by LiveKit to ingest streams produced by external
       workflows
     digest: 0923fd8220a53dc3efab1c2a02d4cde73645675145fb86d294e14d7dfe2059f1
@@ -41,7 +41,7 @@ entries:
     version: 1.4.3
   - apiVersion: v2
     appVersion: v1.4.3
-    created: "2026-04-15T14:16:49.726767069Z"
+    created: "2026-04-15T14:33:59.142294568Z"
     description: Ingress is used by LiveKit to ingest streams produced by external
       workflows
     digest: 83564d037eb34cb241df763adc137c1fda3aaf6d47ed8c069517acb58acd5731
@@ -55,7 +55,7 @@ entries:
   livekit-server:
   - apiVersion: v2
     appVersion: v1.9.0
-    created: "2026-04-15T14:16:49.728524903Z"
+    created: "2026-04-15T14:33:59.143651668Z"
     description: Real-time infrastructure for developers. LiveKit is the open source
       stack for streaming audio, video, and data.
     digest: 2b9339ae6d53b88e0d11c2955e44601c8a5e124d5de38ef7aa9b36ed9eb09aa9
@@ -68,7 +68,7 @@ entries:
     version: 1.9.0
   - apiVersion: v2
     appVersion: v1.9.0
-    created: "2026-04-15T14:16:49.727965911Z"
+    created: "2026-04-15T14:33:59.143138942Z"
     description: Real-time infrastructure for developers. LiveKit is the open source
       stack for streaming audio, video, and data.
     digest: 2419d541922d74ae6ed5e824675ba113ca1892aa1bde4b27d09874e9b55608c4
@@ -79,4 +79,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/laerdallabs/livekit-helm/gh-pages/livekit-server-1.9.0-prerelease.tgz
     version: 1.9.0-prerelease
-generated: "2026-04-15T14:16:49.724930033Z"
+generated: "2026-04-15T14:33:59.141171205Z"
