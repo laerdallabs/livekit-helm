@@ -67,6 +67,10 @@ spec:
               containerPort: {{ .Values.egress.prometheus_port }}
               protocol: TCP
             {{- end }}
+          {{- with .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /
