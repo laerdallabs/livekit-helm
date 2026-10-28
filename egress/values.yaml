@@ -40,6 +40,14 @@ podSecurityContext: {}
 
 securityContext: {}
 
+# Give the egress process time to bind its HTTP health endpoint before liveness/readiness kick in
+startupProbe:
+  httpGet:
+    path: /
+    port: health
+  failureThreshold: 30
+  periodSeconds: 2
+
 tolerations: []
 
 affinity: {}
